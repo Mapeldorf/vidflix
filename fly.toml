@@ -1,7 +1,7 @@
 # fly.toml - configuración de Fly.io
 # Reemplaza "vidflix-tuusuario" con el nombre que elijas al hacer fly launch
 
-app = "vidflix-tuusuario"
+app = "vidflix-mapeldorf"
 primary_region = "mad"
 
 [build]
