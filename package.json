@@ -5,10 +5,7 @@
   "scripts": {
     "dev": "nx run-many --target=serve --projects=api,client --parallel=2",
     "build": "nx run-many --target=build --projects=api,client",
-    "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
-    "docker:dev:detach": "docker compose -f docker-compose.dev.yml up --build -d",
-    "docker:prod": "docker compose up --build -d",
-    "docker:down": "docker compose -f docker-compose.dev.yml down; docker compose down"
+    "start": "node apps/api/dist/main.js"
   },
   "private": true,
   "dependencies": {
