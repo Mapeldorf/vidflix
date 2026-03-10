@@ -9,6 +9,15 @@ primary_region = "ams"
 [build]
   dockerfile = "Dockerfile"
 
+[env]
+  NODE_ENV = "production"
+  DB_PATH = "/data/vidflix.db"
+  PORT = "8080"
+
+[[mounts]]
+  source = "vidflix_data"
+  destination = "/data"
+
 [http_service]
   internal_port = 8080
   force_https = true
