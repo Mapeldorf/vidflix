@@ -1,0 +1,32 @@
+<nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a
+        routerLink="/buscar"
+        class="flex items-center gap-2 text-white font-bold text-xl"
+      >
+        <span class="text-red-500">🎬</span> VidFlix
+      </a>
+      <div class="flex gap-6">
+        <a
+          routerLink="/buscar"
+          routerLinkActive="text-white"
+          class="text-gray-400 hover:text-white transition-colors font-medium"
+        >
+          Buscar
+        </a>
+        <a
+          routerLink="/biblioteca"
+          routerLinkActive="text-white"
+          class="text-gray-400 hover:text-white transition-colors font-medium"
+        >
+          Mi Biblioteca
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="min-h-screen bg-gray-950 text-white">
+  <router-outlet></router-outlet>
+</main>

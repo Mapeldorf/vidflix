@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Read(//c/Users/Usuario/AppData/Local/Temp/vidflix/**)",
+      "Bash(npx nx g @nx/angular:app client --directory=apps/client --style=css --routing=true --standalone=true --unitTestRunner=none --e2eTestRunner=none --no-interactive)",
+      "Bash(npx nx g @nx/angular:app --name=client --directory=apps/client --style=css --routing=true --standalone=true --unitTestRunner=none --e2eTestRunner=none --no-interactive)",
+      "Bash(NX_IGNORE_UNSUPPORTED_TS_SETUP=true npx nx g @nx/angular:app --name=client --directory=apps/client --style=css --routing=true --standalone=true --unitTestRunner=none --e2eTestRunner=none --no-interactive)",
+      "Bash(NX_IGNORE_UNSUPPORTED_TS_SETUP=true npx nx g @nx/express:app --name=api --directory=apps/api --unitTestRunner=none --no-interactive)",
+      "Bash(NX_IGNORE_UNSUPPORTED_TS_SETUP=true npx nx g @nx/js:lib --name=shared-types --directory=libs/shared-types --bundler=none --unitTestRunner=none --no-interactive)",
+      "Bash(npm install better-sqlite3 axios dotenv cors)",
+      "Bash(npm install --save-dev @types/better-sqlite3 @types/cors @types/express nodemon)",
+      "Bash(node -e \":*)",
+      "Bash(npm install)",
+      "Bash(NX_IGNORE_UNSUPPORTED_TS_SETUP=true npx nx g @nx/angular:setup-tailwind --project=client --no-interactive)",
+      "Bash(npm uninstall autoprefixer)",
+      "Bash(npm install tailwindcss@4 @tailwindcss/postcss)",
+      "Bash(node -e \"console.log\\(require\\(''C:/Users/Usuario/Workspace/vidflix/node_modules/tailwindcss/package.json''\\).version\\)\")",
+      "Bash(/c/Users/Usuario/Workspace/vidflix/.gitignore:*)",
+      "Bash(NX_IGNORE_UNSUPPORTED_TS_SETUP=true npx nx build api --configuration=development)",
+      "Bash(NX_IGNORE_UNSUPPORTED_TS_SETUP=true npx nx sync)",
+      "Bash(NX_IGNORE_UNSUPPORTED_TS_SETUP=true npx nx sync --yes)",
+      "Bash(NX_IGNORE_UNSUPPORTED_TS_SETUP=true npx nx build api --configuration=development --skip-nx-cache)",
+      "Bash(/c/Users/Usuario/Workspace/vidflix/apps/api/tsconfig.app.json:*)",
+      "Bash(NX_IGNORE_UNSUPPORTED_TS_SETUP=true npx nx build client --configuration=development)",
+      "Bash(NX_IGNORE_UNSUPPORTED_TS_SETUP=true npx nx run-many --target=build --projects=api,client --configuration=development)",
+      "Bash(cmd /c \"taskkill /PID 35620 /F\")",
+      "Bash(echo \"exit: $?\")",
+      "Bash(cmd.exe /c \"taskkill /PID 42688 /F & taskkill /PID 8244 /F\")"
+    ]
+  }
+}

@@ -42,3 +42,15 @@ Thumbs.db
 .nx/workspace-data
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+
+.angular
+
+# Environment
+.env
+
+# SQLite database
+*.db
+data/
+
+# Vendored assets copied from node_modules
+apps/client/public/webtorrent.min.js

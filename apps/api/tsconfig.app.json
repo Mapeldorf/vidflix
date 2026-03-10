@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "composite": false,
+    "declarationMap": false,
+    "emitDeclarationOnly": false,
+    "outDir": "dist",
+    "types": ["node"],
+    "rootDir": "src"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": [],
+  "references": [
+    {
+      "path": "../../libs/shared-types/tsconfig.lib.json"
+    }
+  ]
+}

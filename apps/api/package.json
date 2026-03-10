@@ -1,0 +1,71 @@
+{
+  "name": "api",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "prune-lockfile": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "executor": "@nx/js:prune-lockfile",
+        "outputs": [
+          "{workspaceRoot}/apps/api/dist/package.json",
+          "{workspaceRoot}/apps/api/dist/package-lock.json"
+        ],
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "copy-workspace-modules": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "outputs": [
+          "{workspaceRoot}/apps/api/dist/workspace_modules"
+        ],
+        "executor": "@nx/js:copy-workspace-modules",
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "prune": {
+        "dependsOn": [
+          "prune-lockfile",
+          "copy-workspace-modules"
+        ],
+        "executor": "nx:noop"
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "api:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "api:build:development"
+          },
+          "production": {
+            "buildTarget": "api:build:production"
+          }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@vidflix/shared-types": "*",
+    "axios": "^1.7.9",
+    "better-sqlite3": "^11.7.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
