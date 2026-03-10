@@ -1,0 +1,28 @@
+# fly.toml - configuración de Fly.io
+# Reemplaza "vidflix-tuusuario" con el nombre que elijas al hacer fly launch
+
+app = "vidflix-tuusuario"
+primary_region = "mad"
+
+[build]
+
+[env]
+  NODE_ENV = "production"
+  DB_PATH = "/data/vidflix.db"
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[mounts]]
+  source = "vidflix_data"
+  destination = "/data"
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1

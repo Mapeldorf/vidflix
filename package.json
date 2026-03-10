@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "nx run-many --target=serve --projects=api,client --parallel=2",
-    "build": "nx run-many --target=build --projects=api,client"
+    "build": "nx run-many --target=build --projects=api,client",
+    "start": "node apps/api/dist/main.js"
   },
   "private": true,
   "dependencies": {
