@@ -13,6 +13,7 @@ primary_region = "ams"
   NODE_ENV = "production"
   DB_PATH = "/data/vidflix.db"
   PORT = "8080"
+  ALLOWED_ORIGIN = "https://vidflix-mapeldorf.fly.dev"
 
 [[mounts]]
   source = "vidflix_data"

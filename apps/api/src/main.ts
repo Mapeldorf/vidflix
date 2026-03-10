@@ -26,13 +26,13 @@ app.set('trust proxy', 1);
 // Security headers (CSP disabled — Angular SPA served from same origin)
 app.use(helmet({ contentSecurityPolicy: false }));
 
-// CORS: same-origin in production; allow dev Angular port in development
-const devOrigin = 'http://localhost:4200';
+// CORS: allow same-origin requests (no Origin header), dev port, and configured production origin
+const allowedOrigins = new Set<string>(['http://localhost:4200']);
+if (process.env['ALLOWED_ORIGIN']) allowedOrigins.add(process.env['ALLOWED_ORIGIN']);
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow same-origin (no Origin header) or configured dev origin
-      if (!origin || origin === devOrigin) {
+      if (!origin || allowedOrigins.has(origin)) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));

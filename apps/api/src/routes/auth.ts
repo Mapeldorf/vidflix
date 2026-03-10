@@ -94,23 +94,29 @@ router.post(
       return;
     }
 
-    // Check uniqueness
-    const existing = db
-      .prepare('SELECT id FROM users WHERE username = ?')
-      .get(cleanUsername);
-    if (existing) {
-      res.status(409).json({ error: 'El nombre de usuario ya está en uso' });
-      return;
+    try {
+      // Check uniqueness
+      const existing = db
+        .prepare('SELECT id FROM users WHERE username = ?')
+        .get(cleanUsername);
+      if (existing) {
+        res.status(409).json({ error: 'El nombre de usuario ya está en uso' });
+        return;
+      }
+
+      const passwordHash = await bcrypt.hash(password, 12);
+      const result = db
+        .prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)')
+        .run(cleanUsername, passwordHash);
+
+      const userId = result.lastInsertRowid as number;
+      issueToken(userId, cleanUsername, res);
+      res.status(201).json({ user: { id: userId, username: cleanUsername } });
+    } catch (err: unknown) {
+      console.error('[register] error:', err);
+      const message = err instanceof Error ? err.message : 'Error al registrar';
+      res.status(500).json({ error: message });
     }
-
-    const passwordHash = await bcrypt.hash(password, 12);
-    const result = db
-      .prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)')
-      .run(cleanUsername, passwordHash);
-
-    const userId = result.lastInsertRowid as number;
-    issueToken(userId, cleanUsername, res);
-    res.status(201).json({ user: { id: userId, username: cleanUsername } });
   }
 );
 
