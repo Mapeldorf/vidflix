@@ -1,8 +1,8 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../../core/api.service';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import type { Movie } from '@vidflix/shared-types';
+import { ApiService } from '../../core/api.service';
 
 const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
 
@@ -12,11 +12,14 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
   imports: [CommonModule],
   template: `
     <div class="max-w-7xl mx-auto px-4 py-8">
-      <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl font-bold text-white">Mi Biblioteca</h1>
-        <span class="text-gray-400 text-sm"
-          >{{ peliculas().length }} películas</span
-        >
+        <span class="text-gray-400 text-sm">
+          @if (hayFiltros()) {
+          {{ peliculasFiltradas().length }} de
+          {{ peliculas().length }} películas } @else {
+          {{ peliculas().length }} películas }
+        </span>
       </div>
 
       @if (loading()) {
@@ -25,13 +28,13 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
           class="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent"
         ></div>
       </div>
-      } @if (error()) {
+      } @else if (error()) {
       <div
         class="bg-red-900/30 border border-red-700 text-red-300 rounded-lg p-4"
       >
         {{ error() }}
       </div>
-      } @if (!loading() && peliculas().length === 0) {
+      } @else if (peliculas().length === 0) {
       <div class="text-center py-20 text-gray-500">
         <p class="text-6xl mb-4">📚</p>
         <p class="text-xl font-medium mb-2">La biblioteca está vacía</p>
@@ -45,11 +48,67 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
           Buscar películas
         </button>
       </div>
-      } @if (peliculas().length > 0) {
+      } @else {
+
+      <!-- Filtros -->
+      <div class="mb-6 space-y-4">
+        <!-- Búsqueda por título -->
+        <input
+          type="search"
+          [value]="tituloBusqueda()"
+          (input)="tituloBusqueda.set($any($event.target).value)"
+          placeholder="Buscar por título..."
+          class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white
+                 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+        />
+
+        <!-- Chips de género -->
+        @if (todosGeneros().length > 0) {
+        <div class="flex flex-wrap gap-2">
+          @for (genero of todosGeneros(); track genero) {
+          <button
+            (click)="toggleGenero(genero)"
+            class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+            [class]="
+              generosSeleccionados().has(genero)
+                ? 'bg-red-600 text-white'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            "
+          >
+            {{ genero }}
+          </button>
+          } @if (generosSeleccionados().size > 0) {
+          <button
+            (click)="limpiarGeneros()"
+            class="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-700 text-gray-400 hover:bg-gray-600 transition-colors"
+          >
+            ✕ Limpiar
+          </button>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Grid o estado sin resultados -->
+      @if (peliculasFiltradas().length === 0) {
+      <div class="text-center py-20 text-gray-500">
+        <p class="text-5xl mb-4">🔍</p>
+        <p class="text-lg font-medium mb-2">Sin resultados</p>
+        <p class="text-sm mb-4">
+          Ninguna película coincide con los filtros aplicados
+        </p>
+        <button
+          (click)="limpiarFiltros()"
+          class="bg-gray-700 hover:bg-gray-600 text-white font-medium px-5 py-2.5 rounded-xl transition-colors"
+        >
+          Limpiar filtros
+        </button>
+      </div>
+      } @else {
       <div
         class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5"
       >
-        @for (pelicula of peliculas(); track pelicula.id) {
+        @for (pelicula of peliculasFiltradas(); track pelicula.id) {
         <div class="bg-gray-800 rounded-xl overflow-hidden group relative">
           <div
             class="cursor-pointer"
@@ -113,7 +172,7 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
         </div>
         }
       </div>
-      }
+      } }
     </div>
 
     <!-- Modal confirmar eliminar -->
@@ -168,6 +227,48 @@ export class LibraryComponent implements OnInit {
   peliculaAEliminar = signal<Movie | null>(null);
   eliminando = signal(false);
 
+  tituloBusqueda = signal('');
+  generosSeleccionados = signal<Set<string>>(new Set());
+
+  todosGeneros = computed(() => {
+    const generos = new Set<string>();
+    for (const p of this.peliculas()) {
+      try {
+        const lista: string[] = JSON.parse(p.genres);
+        for (const g of lista) generos.add(g);
+      } catch {
+        // genres malformed — skip
+      }
+    }
+    return [...generos].sort((a, b) => a.localeCompare(b));
+  });
+
+  peliculasFiltradas = computed(() => {
+    const titulo = this.tituloBusqueda().trim().toLowerCase();
+    const generos = this.generosSeleccionados();
+    return this.peliculas().filter((p) => {
+      if (titulo && !p.title.toLowerCase().includes(titulo)) return false;
+      if (generos.size > 0) {
+        let lista: string[] = [];
+        try {
+          lista = JSON.parse(p.genres);
+        } catch {
+          /* skip */
+        }
+        for (const g of generos) {
+          if (!lista.includes(g)) return false;
+        }
+      }
+      return true;
+    });
+  });
+
+  hayFiltros = computed(
+    () =>
+      this.tituloBusqueda().trim().length > 0 ||
+      this.generosSeleccionados().size > 0
+  );
+
   readonly imgUrl = (path: string) => `${TMDB_IMG}${path}`;
 
   ngOnInit() {
@@ -186,6 +287,27 @@ export class LibraryComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  toggleGenero(genero: string) {
+    this.generosSeleccionados.update((set) => {
+      const next = new Set(set);
+      if (next.has(genero)) {
+        next.delete(genero);
+      } else {
+        next.add(genero);
+      }
+      return next;
+    });
+  }
+
+  limpiarGeneros() {
+    this.generosSeleccionados.set(new Set());
+  }
+
+  limpiarFiltros() {
+    this.tituloBusqueda.set('');
+    this.generosSeleccionados.set(new Set());
   }
 
   reproducir(id: number) {

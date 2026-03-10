@@ -4,11 +4,11 @@ import type { Movie, SaveMovieDto } from '@vidflix/shared-types';
 
 export const moviesRouter = Router();
 
-moviesRouter.get('/', (_req: Request, res: Response) => {
+moviesRouter.get('/', (req: Request, res: Response) => {
   try {
     const movies = db
-      .prepare('SELECT * FROM movies ORDER BY created_at DESC')
-      .all() as Movie[];
+      .prepare('SELECT * FROM movies WHERE user_id = ? ORDER BY created_at DESC')
+      .all(req.user!.userId) as Movie[];
     res.json(movies);
   } catch (err: unknown) {
     const message =
@@ -24,9 +24,9 @@ moviesRouter.get('/:id', (req: Request, res: Response) => {
     return;
   }
   try {
-    const movie = db.prepare('SELECT * FROM movies WHERE id = ?').get(id) as
-      | Movie
-      | undefined;
+    const movie = db
+      .prepare('SELECT * FROM movies WHERE id = ? AND user_id = ?')
+      .get(id, req.user!.userId) as Movie | undefined;
     if (!movie) {
       res.status(404).json({ error: 'Película no encontrada' });
       return;
@@ -63,10 +63,11 @@ moviesRouter.post('/', (req: Request, res: Response) => {
 
   try {
     const stmt = db.prepare(`
-      INSERT INTO movies (tmdb_id, title, overview, poster_path, backdrop_path, release_date, vote_average, runtime, genres, magnet_link)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO movies (user_id, tmdb_id, title, overview, poster_path, backdrop_path, release_date, vote_average, runtime, genres, magnet_link)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     const result = stmt.run(
+      req.user!.userId,
       tmdb_id,
       title,
       overview ?? '',
@@ -111,8 +112,8 @@ moviesRouter.put('/:id', (req: Request, res: Response) => {
   }
   try {
     const result = db
-      .prepare('UPDATE movies SET magnet_link = ? WHERE id = ?')
-      .run(magnet_link, id);
+      .prepare('UPDATE movies SET magnet_link = ? WHERE id = ? AND user_id = ?')
+      .run(magnet_link, id, req.user!.userId);
     if (result.changes === 0) {
       res.status(404).json({ error: 'Película no encontrada' });
       return;
@@ -135,7 +136,9 @@ moviesRouter.delete('/:id', (req: Request, res: Response) => {
     return;
   }
   try {
-    const result = db.prepare('DELETE FROM movies WHERE id = ?').run(id);
+    const result = db
+      .prepare('DELETE FROM movies WHERE id = ? AND user_id = ?')
+      .run(id, req.user!.userId);
     if (result.changes === 0) {
       res.status(404).json({ error: 'Película no encontrada' });
       return;
