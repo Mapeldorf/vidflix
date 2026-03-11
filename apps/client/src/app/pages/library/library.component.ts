@@ -5,6 +5,7 @@ import type { Movie } from '@vidflix/shared-types';
 import { ApiService } from '../../core/api.service';
 
 const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
+const TMDB_IMG_SM = 'https://image.tmdb.org/t/p/w185';
 
 @Component({
   selector: 'app-library',
@@ -14,12 +15,41 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
     <div class="max-w-7xl mx-auto px-4 py-8">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl font-bold text-white">Mi Biblioteca</h1>
-        <span class="text-gray-400 text-sm">
-          @if (hayFiltros()) {
-          {{ peliculasFiltradas().length }} de
-          {{ peliculas().length }} películas } @else {
-          {{ peliculas().length }} películas }
-        </span>
+        <div class="flex items-center gap-4">
+          <span class="text-gray-400 text-sm">
+            @if (hayFiltros()) {
+            {{ peliculasFiltradas().length }} de
+            {{ peliculas().length }} películas } @else {
+            {{ peliculas().length }} películas }
+          </span>
+          <!-- Toggle grid/lista -->
+          <div class="flex rounded-lg overflow-hidden border border-gray-700">
+            <button
+              type="button"
+              (click)="vista.set('grid')"
+              title="Vista en cuadrícula"
+              class="p-2 transition-colors"
+              [class]="vista() === 'grid' ? 'bg-orange-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path d="M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm11 0h7v7h-7z"/>
+              </svg>
+            </button>
+            <button
+              type="button"
+              (click)="vista.set('lista')"
+              title="Vista en lista"
+              class="p-2 transition-colors"
+              [class]="vista() === 'lista' ? 'bg-orange-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
       @if (loading()) {
@@ -65,6 +95,24 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
           <div
             class="flex rounded-xl overflow-hidden border border-gray-700 text-sm flex-shrink-0 self-start"
           >
+            @for (op of estadoOpciones; track op.value) {
+            <button
+              type="button"
+              (click)="filtroEstado.set(op.value)"
+              class="px-3 py-3 transition-colors whitespace-nowrap"
+              [class]="
+                filtroEstado() === op.value
+                  ? 'bg-orange-600 text-white font-medium'
+                  : 'bg-gray-800 text-gray-400 hover:text-white'
+              "
+            >
+              {{ op.label }}
+            </button>
+            }
+          </div>
+          <div
+            class="flex rounded-xl overflow-hidden border border-gray-700 text-sm flex-shrink-0 self-start"
+          >
             @for (op of ordenOpciones; track op.value) {
             <button
               type="button"
@@ -82,22 +130,8 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
           </div>
         </div>
 
-        <!-- Chips de filtro -->
+        <!-- Chips de género -->
         <div class="flex flex-wrap gap-2">
-          <!-- Filtro: en progreso -->
-          <button
-            (click)="soloEnProgreso.set(!soloEnProgreso())"
-            class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
-            [class]="
-              soloEnProgreso()
-                ? 'bg-orange-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            "
-          >
-            En progreso
-          </button>
-
-          <!-- Chips de género -->
           @for (genero of todosGeneros(); track genero) {
           <button
             (click)="toggleGenero(genero)"
@@ -121,7 +155,7 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
         </div>
       </div>
 
-      <!-- Grid o estado sin resultados -->
+      <!-- Resultados -->
       @if (peliculasFiltradas().length === 0) {
       <div class="text-center py-20 text-gray-500">
         <p class="text-5xl mb-4">🔍</p>
@@ -136,10 +170,10 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
           Limpiar filtros
         </button>
       </div>
-      } @else {
-      <div
-        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5"
-      >
+      } @else if (vista() === 'grid') {
+
+      <!-- Vista grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
         @for (pelicula of peliculasFiltradas(); track pelicula.id) {
         <div class="bg-gray-800 rounded-xl overflow-hidden group relative">
           <div
@@ -158,14 +192,11 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
               loading="lazy"
             />
             } @else {
-            <div
-              class="w-full aspect-[2/3] bg-gray-700 flex items-center justify-center"
-            >
+            <div class="w-full aspect-[2/3] bg-gray-700 flex items-center justify-center">
               <span class="text-4xl">🎬</span>
             </div>
             }
 
-            <!-- Valoración -->
             @if (pelicula.vote_average) {
             <div class="absolute top-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm rounded-md px-1.5 py-0.5">
               <svg viewBox="0 0 24 24" fill="#facc15" class="w-3 h-3 flex-shrink-0">
@@ -175,23 +206,14 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
             </div>
             }
 
-            <!-- Barra de progreso -->
             @if (progressPct(pelicula) > 0) {
             <div class="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
-              <div
-                class="h-full bg-orange-500"
-                [style.width.%]="progressPct(pelicula)"
-              ></div>
+              <div class="h-full bg-orange-500" [style.width.%]="progressPct(pelicula)"></div>
             </div>
             }
 
-            <!-- Play overlay -->
-            <div
-              class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-            >
-              <div
-                class="bg-black/50 rounded-full w-14 h-14 flex items-center justify-center"
-              >
+            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              <div class="bg-black/50 rounded-full w-14 h-14 flex items-center justify-center">
                 <svg viewBox="0 0 24 24" fill="white" class="w-7 h-7 ml-1">
                   <path d="M8 5v14l11-7z" />
                 </svg>
@@ -201,30 +223,13 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
 
           <div class="p-3 flex items-center gap-2">
             <div class="flex-1 min-w-0">
-              <h3
-                class="font-medium text-white text-sm truncate leading-snug"
-                [title]="pelicula.title"
-              >
+              <h3 class="font-medium text-white text-sm truncate leading-snug" [title]="pelicula.title">
                 {{ pelicula.title }}
               </h3>
-              <p class="text-gray-500 text-xs mt-0.5">
-                {{ pelicula.release_date | slice : 0 : 4 }}
-              </p>
+              <p class="text-gray-500 text-xs mt-0.5">{{ pelicula.release_date | slice:0:4 }}</p>
             </div>
-            <button
-              (click)="confirmarEliminar(pelicula)"
-              class="flex-shrink-0 text-gray-600 hover:text-red-400 transition-colors"
-              title="Eliminar"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.75"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
-              >
+            <button (click)="confirmarEliminar(pelicula)" class="flex-shrink-0 text-gray-600 hover:text-red-400 transition-colors" title="Eliminar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
                 <polyline points="3 6 5 6 21 6" />
                 <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
                 <path d="M10 11v6M14 11v6" />
@@ -235,6 +240,141 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
         </div>
         }
       </div>
+
+      } @else {
+
+      <!-- Vista lista -->
+      <div class="flex flex-col gap-3">
+        @for (pelicula of peliculasFiltradas(); track pelicula.id) {
+        <div class="bg-gray-800 rounded-xl overflow-hidden flex group">
+          <!-- Poster -->
+          <div
+            class="relative flex-shrink-0 w-28 cursor-pointer"
+            role="button"
+            tabindex="0"
+            (click)="reproducir(pelicula.id)"
+            (keydown.enter)="reproducir(pelicula.id)"
+            (keydown.space)="reproducir(pelicula.id)"
+          >
+            @if (pelicula.poster_path) {
+            <img
+              [src]="imgUrlSm(pelicula.poster_path)"
+              [alt]="pelicula.title"
+              class="w-full h-full object-cover group-hover:opacity-70 transition-opacity"
+              loading="lazy"
+            />
+            } @else {
+            <div class="w-full h-full bg-gray-700 flex items-center justify-center min-h-[120px]">
+              <span class="text-2xl">🎬</span>
+            </div>
+            }
+            <!-- Play overlay -->
+            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              <div class="bg-black/50 rounded-full w-8 h-8 flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="white" class="w-4 h-4 ml-0.5">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+            <!-- Barra de progreso -->
+            @if (progressPct(pelicula) > 0) {
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
+              <div class="h-full bg-orange-500" [style.width.%]="progressPct(pelicula)"></div>
+            </div>
+            }
+          </div>
+
+          <!-- Contenido -->
+          <div class="flex-1 min-w-0 p-4 flex flex-col gap-1.5">
+            <!-- Fila título + acciones -->
+            <div class="flex items-start justify-between gap-3">
+              <h3
+                class="font-semibold text-white text-base leading-snug cursor-pointer hover:text-orange-400 transition-colors"
+                (click)="reproducir(pelicula.id)"
+              >
+                {{ pelicula.title }}
+              </h3>
+              <button (click)="confirmarEliminar(pelicula)" class="flex-shrink-0 text-gray-600 hover:text-red-400 transition-colors mt-0.5" title="Eliminar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                  <path d="M10 11v6M14 11v6" />
+                  <path d="M9 6V4h6v2" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Metadatos -->
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-400">
+              @if (pelicula.release_date) {
+              <span>{{ pelicula.release_date | date:'d MMM yyyy' }}</span>
+              }
+              @if (pelicula.vote_average) {
+              <span class="flex items-center gap-1">
+                <svg viewBox="0 0 24 24" fill="#facc15" class="w-3.5 h-3.5 flex-shrink-0">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>
+                </svg>
+                {{ pelicula.vote_average | number:'1.1-1' }}
+              </span>
+              }
+              @if (pelicula.runtime) {
+              <span>{{ formatRuntime(pelicula.runtime) }}</span>
+              }
+              @if (pelicula.magnet_link) {
+              <span class="flex items-center gap-1 text-green-400 text-xs font-medium">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3">
+                  <path d="M18 2a4 4 0 0 1 4 4v3a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/>
+                  <path d="M6 2a4 4 0 0 1 4 4v3a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/>
+                  <path d="M6 13v2a6 6 0 0 0 12 0v-2"/>
+                </svg>
+                Torrent
+              </span>
+              }
+            </div>
+
+            <!-- Géneros -->
+            @if (generosTexto(pelicula)) {
+            <div class="flex flex-wrap gap-1.5">
+              @for (g of generosList(pelicula); track g) {
+              <span class="text-xs bg-gray-700 text-gray-300 rounded-full px-2 py-0.5">{{ g }}</span>
+              }
+            </div>
+            }
+
+            <!-- Sinopsis -->
+            @if (pelicula.overview) {
+            <p class="text-gray-400 text-sm leading-relaxed line-clamp-3 mt-0.5">
+              {{ pelicula.overview }}
+            </p>
+            }
+
+            <!-- Footer: añadida + progreso -->
+            <div class="flex items-end justify-between gap-4 mt-auto pt-1">
+              @if (pelicula.created_at) {
+              <span class="text-xs text-gray-600">
+                Añadida el {{ pelicula.created_at | date:'d MMM yyyy' }}
+              </span>
+              }
+              @if (progressPct(pelicula) > 0) {
+              <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                @if (progressPct(pelicula) >= 90) {
+                <span class="text-xs text-green-400 font-medium">Vista</span>
+                } @else {
+                <span class="text-xs text-orange-400">
+                  {{ progressTime(pelicula) }}
+                </span>
+                <div class="w-32 h-1 bg-gray-700 rounded-full overflow-hidden">
+                  <div class="h-full bg-orange-500 rounded-full" [style.width.%]="progressPct(pelicula)"></div>
+                </div>
+                }
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
       } }
     </div>
 
@@ -290,10 +430,17 @@ export class LibraryComponent implements OnInit {
   peliculaAEliminar = signal<Movie | null>(null);
   eliminando = signal(false);
 
+  vista = signal<'grid' | 'lista'>('grid');
   tituloBusqueda = signal('');
   generosSeleccionados = signal<Set<string>>(new Set());
-  soloEnProgreso = signal(false);
+  filtroEstado = signal<'todas' | 'en-progreso' | 'ya-vistas' | 'no-vistas'>('todas');
   orden = signal<'recientes' | 'valoracion' | 'titulo'>('recientes');
+  readonly estadoOpciones = [
+    { value: 'todas' as const, label: 'Todas' },
+    { value: 'en-progreso' as const, label: 'En progreso' },
+    { value: 'ya-vistas' as const, label: 'Ya vistas' },
+    { value: 'no-vistas' as const, label: 'No vistas' },
+  ];
   readonly ordenOpciones = [
     { value: 'recientes' as const, label: 'Recientes' },
     { value: 'valoracion' as const, label: 'Valoración' },
@@ -316,12 +463,17 @@ export class LibraryComponent implements OnInit {
   peliculasFiltradas = computed(() => {
     const titulo = this.tituloBusqueda().trim().toLowerCase();
     const generos = this.generosSeleccionados();
-    const enProgreso = this.soloEnProgreso();
+    const estado = this.filtroEstado();
     const ord = this.orden();
 
     const filtradas = this.peliculas().filter((p) => {
       if (titulo && !p.title.toLowerCase().includes(titulo)) return false;
-      if (enProgreso && (p.progress_seconds ?? 0) <= 10) return false;
+      if (estado === 'en-progreso') {
+        const pct = this.progressPct(p);
+        if (pct < 1 || pct >= 90) return false;
+      }
+      if (estado === 'ya-vistas' && this.progressPct(p) < 90) return false;
+      if (estado === 'no-vistas' && (p.progress_seconds ?? 0) > 10) return false;
       if (generos.size > 0) {
         let lista: string[] = [];
         try {
@@ -348,10 +500,31 @@ export class LibraryComponent implements OnInit {
     () =>
       this.tituloBusqueda().trim().length > 0 ||
       this.generosSeleccionados().size > 0 ||
-      this.soloEnProgreso()
+      this.filtroEstado() !== 'todas'
   );
 
   readonly imgUrl = (path: string) => `${TMDB_IMG}${path}`;
+  readonly imgUrlSm = (path: string) => `${TMDB_IMG_SM}${path}`;
+
+  progressTime(pelicula: Movie): string {
+    const seen = this.formatRuntime(Math.floor((pelicula.progress_seconds ?? 0) / 60));
+    const total = pelicula.runtime ? this.formatRuntime(pelicula.runtime) : null;
+    return total ? `${seen} / ${total}` : seen;
+  }
+
+  formatRuntime(minutes: number): string {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return h > 0 ? `${h}h ${m > 0 ? m + 'min' : ''}`.trim() : `${m}min`;
+  }
+
+  generosList(pelicula: Movie): string[] {
+    try {
+      return JSON.parse(pelicula.genres) as string[];
+    } catch {
+      return [];
+    }
+  }
 
   generosTexto(pelicula: Movie): string {
     try {
@@ -403,7 +576,7 @@ export class LibraryComponent implements OnInit {
   limpiarFiltros() {
     this.tituloBusqueda.set('');
     this.generosSeleccionados.set(new Set());
-    this.soloEnProgreso.set(false);
+    this.filtroEstado.set('todas');
   }
 
   reproducir(id: number) {
