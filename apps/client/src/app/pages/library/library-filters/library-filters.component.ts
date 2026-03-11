@@ -80,8 +80,11 @@ export class LibraryFiltersComponent {
   toggleGenero(genero: string): void {
     this.generosSeleccionados.update((set) => {
       const next = new Set(set);
-      if (next.has(genero)) next.delete(genero);
-      else next.add(genero);
+      if (next.has(genero)) {
+        next.delete(genero);
+      } else {
+        next.add(genero);
+      }
       return next;
     });
     this.emit();

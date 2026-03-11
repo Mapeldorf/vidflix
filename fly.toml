@@ -9,6 +9,9 @@ primary_region = "ams"
 [build]
   dockerfile = "Dockerfile"
 
+[deploy]
+  strategy = "immediate"
+
 [env]
   NODE_ENV = "production"
   DB_PATH = "/data/vidflix.db"
