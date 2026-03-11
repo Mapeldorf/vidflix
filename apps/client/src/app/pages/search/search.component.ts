@@ -28,7 +28,7 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
           [formControl]="searchControl"
           type="text"
           placeholder="Busca una película..."
-          class="w-full bg-gray-800 text-white border border-gray-700 rounded-xl px-5 py-4 pr-12 text-lg focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors"
+          class="w-full bg-gray-800 text-white border border-gray-700 rounded-xl px-5 py-4 pr-12 text-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"
         />
         <span
           class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl"
@@ -39,12 +39,12 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
       @if (loading()) {
       <div class="flex justify-center py-16">
         <div
-          class="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent"
+          class="animate-spin rounded-full h-12 w-12 border-4 border-orange-500 border-t-transparent"
         ></div>
       </div>
       } @if (error()) {
       <div
-        class="bg-red-900/30 border border-red-700 text-red-300 rounded-lg p-4 mb-6"
+        class="bg-orange-900/30 border border-orange-700 text-orange-300 rounded-lg p-4 mb-6"
       >
         {{ error() }}
       </div>
@@ -54,7 +54,7 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
       >
         @for (movie of results(); track movie.id) {
         <div
-          class="bg-gray-800 rounded-xl overflow-hidden cursor-pointer hover:scale-105 hover:shadow-xl hover:shadow-red-900/20 transition-all duration-200 group"
+          class="bg-gray-800 rounded-xl overflow-hidden cursor-pointer hover:scale-105 hover:shadow-xl hover:shadow-orange-900/20 transition-all duration-200 group"
           role="button"
           tabindex="0"
           (click)="verDetalle(movie.id)"
@@ -77,7 +77,7 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
           }
           <div class="p-3">
             <h3
-              class="font-semibold text-white text-sm line-clamp-2 group-hover:text-red-400 transition-colors"
+              class="font-semibold text-white text-sm line-clamp-2 group-hover:text-orange-400 transition-colors"
             >
               {{ movie.title }}
             </h3>

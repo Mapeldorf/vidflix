@@ -129,6 +129,32 @@ moviesRouter.put('/:id', (req: Request, res: Response) => {
   }
 });
 
+moviesRouter.put('/:id/progress', (req: Request, res: Response) => {
+  const id = parseInt(req.params['id'], 10);
+  if (isNaN(id)) {
+    res.status(400).json({ error: 'ID inválido' });
+    return;
+  }
+  const { progress_seconds } = req.body as { progress_seconds: number };
+  if (typeof progress_seconds !== 'number' || progress_seconds < 0) {
+    res.status(400).json({ error: 'progress_seconds debe ser un número >= 0' });
+    return;
+  }
+  try {
+    const result = db
+      .prepare('UPDATE movies SET progress_seconds = ? WHERE id = ? AND user_id = ?')
+      .run(Math.floor(progress_seconds), id, req.user!.userId);
+    if (result.changes === 0) {
+      res.status(404).json({ error: 'Película no encontrada' });
+      return;
+    }
+    res.json({ success: true });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Error guardando progreso';
+    res.status(500).json({ error: message });
+  }
+});
+
 moviesRouter.delete('/:id', (req: Request, res: Response) => {
   const id = parseInt(req.params['id'], 10);
   if (isNaN(id)) {

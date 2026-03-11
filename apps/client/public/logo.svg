@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 100" width="324" height="100">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF3D00"/>
+      <stop offset="100%" stop-color="#FF8C00"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon -->
+  <rect x="0" y="2.2" width="96" height="96" rx="22" ry="22" fill="url(#g)"/>
+  <polygon points="32,36 32,68 70,52" fill="white"/>
+
+  <!-- Wordmark como paths (sin dependencia de fuente) -->
+  <path fill="white" transform="translate(116.00,73.30) scale(0.066,-0.066)" d="M721 702 472 0H258L9 702H191L365 172L540 702Z"/>
+  <path fill="white" transform="translate(163.18,73.30) scale(0.066,-0.066)" d="M46 708Q46 748 74.5 774.5Q103 801 148 801Q192 801 220.5 774.5Q249 748 249 708Q249 669 220.5 642.5Q192 616 148 616Q103 616 74.5 642.5Q46 669 46 708ZM233 558V0H62V558Z"/>
+  <path fill="white" transform="translate(181.65,73.30) scale(0.066,-0.066)" d="M274 566Q329 566 374.5 543.0Q420 520 446 481V740H617V0H446V80Q422 40 377.5 16.0Q333 -8 274 -8Q205 -8 149.0 27.5Q93 63 60.5 128.5Q28 194 28 280Q28 366 60.5 431.0Q93 496 149.0 531.0Q205 566 274 566ZM324 417Q273 417 237.5 380.5Q202 344 202 280Q202 216 237.5 178.5Q273 141 324 141Q375 141 410.5 178.0Q446 215 446 279Q446 343 410.5 380.0Q375 417 324 417Z"/>
+  <path fill="#FF4500" transform="translate(225.46,73.30) scale(0.066,-0.066)" d="M342 416H250V0H79V416H17V558H79V574Q79 677 138.0 730.5Q197 784 311 784Q330 784 339 783V638Q290 641 270.0 624.0Q250 607 250 563V558H342Z"/>
+  <path fill="#FF4500" transform="translate(248.22,73.30) scale(0.066,-0.066)" d="M233 740V0H62V740Z"/>
+  <path fill="#FF4500" transform="translate(266.69,73.30) scale(0.066,-0.066)" d="M46 708Q46 748 74.5 774.5Q103 801 148 801Q192 801 220.5 774.5Q249 748 249 708Q249 669 220.5 642.5Q192 616 148 616Q103 616 74.5 642.5Q46 669 46 708ZM233 558V0H62V558Z"/>
+  <path fill="#FF4500" transform="translate(285.16,73.30) scale(0.066,-0.066)" d="M392 0 285 155 195 0H10L194 285L5 558H197L304 404L394 558H579L392 277L584 0Z"/>
+</svg>

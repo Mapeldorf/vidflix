@@ -21,13 +21,13 @@ const TMDB_IMG_ORIG = 'https://image.tmdb.org/t/p/original';
     @if (loading()) {
     <div class="flex justify-center items-center min-h-screen">
       <div
-        class="animate-spin rounded-full h-14 w-14 border-4 border-red-500 border-t-transparent"
+        class="animate-spin rounded-full h-14 w-14 border-4 border-orange-500 border-t-transparent"
       ></div>
     </div>
     } @if (error()) {
     <div class="max-w-2xl mx-auto p-8">
       <div
-        class="bg-red-900/30 border border-red-700 text-red-300 rounded-lg p-4"
+        class="bg-orange-900/30 border border-orange-700 text-orange-300 rounded-lg p-4"
       >
         {{ error() }}
       </div>
@@ -103,7 +103,7 @@ const TMDB_IMG_ORIG = 'https://image.tmdb.org/t/p/original';
           <div class="flex gap-3">
             <button
               (click)="abrirModal()"
-              class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors flex items-center gap-2"
+              class="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors flex items-center gap-2"
             >
               <span>➕</span> Guardar en biblioteca
             </button>
@@ -176,7 +176,7 @@ const TMDB_IMG_ORIG = 'https://image.tmdb.org/t/p/original';
                 (click)="setModo('magnet')"
                 [class]="
                   modo() === 'magnet'
-                    ? 'flex-1 py-2 bg-red-600 text-white font-medium'
+                    ? 'flex-1 py-2 bg-orange-600 text-white font-medium'
                     : 'flex-1 py-2 bg-gray-800 text-gray-400 hover:text-white transition-colors'
                 "
               >
@@ -187,7 +187,7 @@ const TMDB_IMG_ORIG = 'https://image.tmdb.org/t/p/original';
                 (click)="setModo('archivo')"
                 [class]="
                   modo() === 'archivo'
-                    ? 'flex-1 py-2 bg-red-600 text-white font-medium'
+                    ? 'flex-1 py-2 bg-orange-600 text-white font-medium'
                     : 'flex-1 py-2 bg-gray-800 text-gray-400 hover:text-white transition-colors'
                 "
               >
@@ -198,21 +198,21 @@ const TMDB_IMG_ORIG = 'https://image.tmdb.org/t/p/original';
             @if (modo() === 'magnet') {
             <div>
               <span class="block text-gray-400 text-sm mb-1">
-                Magnet Link <span class="text-red-500">*</span>
+                Magnet Link <span class="text-orange-500">*</span>
               </span>
               <textarea
                 formControlName="magnetLink"
                 rows="3"
                 placeholder="magnet:?xt=urn:btih:..."
-                class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-red-500 resize-none placeholder-gray-600"
-                [class.border-red-500]="
+                class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-orange-500 resize-none placeholder-gray-600"
+                [class.border-orange-500]="
                   form.get('magnetLink')?.invalid &&
                   form.get('magnetLink')?.touched
                 "
               ></textarea>
               @if (form.get('magnetLink')?.invalid &&
               form.get('magnetLink')?.touched) {
-              <p class="text-red-400 text-xs mt-1">
+              <p class="text-orange-400 text-xs mt-1">
                 El magnet link es requerido
               </p>
               }
@@ -220,14 +220,14 @@ const TMDB_IMG_ORIG = 'https://image.tmdb.org/t/p/original';
             } @if (modo() === 'archivo') {
             <div>
               <span class="block text-gray-400 text-sm mb-1">
-                Archivo .torrent <span class="text-red-500">*</span>
+                Archivo .torrent <span class="text-orange-500">*</span>
               </span>
               <label
                 class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer transition-colors"
                 [class]="
                   archivoNombre()
                     ? 'border-green-600 bg-green-900/20'
-                    : 'border-gray-600 bg-gray-800 hover:border-red-500'
+                    : 'border-gray-600 bg-gray-800 hover:border-orange-500'
                 "
               >
                 @if (archivoNombre()) {
@@ -247,7 +247,7 @@ const TMDB_IMG_ORIG = 'https://image.tmdb.org/t/p/original';
                 />
               </label>
               @if (modoArchivoError()) {
-              <p class="text-red-400 text-xs mt-1">{{ modoArchivoError() }}</p>
+              <p class="text-orange-400 text-xs mt-1">{{ modoArchivoError() }}</p>
               }
             </div>
             }
@@ -255,7 +255,7 @@ const TMDB_IMG_ORIG = 'https://image.tmdb.org/t/p/original';
 
           @if (saveError()) {
           <div
-            class="bg-red-900/30 border border-red-700 text-red-300 rounded-lg p-3 mt-4 text-sm"
+            class="bg-orange-900/30 border border-orange-700 text-orange-300 rounded-lg p-3 mt-4 text-sm"
           >
             {{ saveError() }}
           </div>
@@ -265,7 +265,7 @@ const TMDB_IMG_ORIG = 'https://image.tmdb.org/t/p/original';
             <button
               type="submit"
               [disabled]="saving()"
-              class="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-900 text-white font-semibold py-3 rounded-xl transition-colors"
+              class="flex-1 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-900 text-white font-semibold py-3 rounded-xl transition-colors"
             >
               {{ saving() ? 'Guardando...' : 'Guardar' }}
             </button>

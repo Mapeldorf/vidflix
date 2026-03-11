@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 
@@ -11,8 +11,14 @@ import { AuthService } from './auth/auth.service';
 export class App {
   protected title = 'VidFlix';
   protected auth = inject(AuthService);
+  protected menuAbierto = signal(false);
 
   logout(): void {
+    this.menuAbierto.set(false);
     this.auth.logout();
+  }
+
+  cerrarMenu(): void {
+    this.menuAbierto.set(false);
   }
 }

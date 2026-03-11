@@ -37,8 +37,7 @@ function passwordMatchValidator(
       <div class="w-full max-w-md">
         <!-- Logo -->
         <div class="text-center mb-8">
-          <span class="text-red-500 text-4xl">🎬</span>
-          <h1 class="text-white text-3xl font-bold mt-2">VidFlix</h1>
+          <img src="/logo.svg" alt="VidFlix" class="h-16 w-auto block mx-auto mb-2" />
           <p class="text-gray-400 mt-1">Crea tu cuenta</p>
         </div>
 
@@ -58,17 +57,17 @@ function passwordMatchValidator(
                 autocomplete="username"
                 placeholder="tu nombre"
                 class="w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-                [class.border-red-500]="fieldInvalid('username')"
+                       focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                [class.border-orange-500]="fieldInvalid('username')"
                 [class.border-gray-700]="!fieldInvalid('username')"
               />
               @if (fieldError('username', 'required')) {
-              <p class="text-red-400 text-xs mt-1">Campo obligatorio</p>
+              <p class="text-orange-400 text-xs mt-1">Campo obligatorio</p>
               } @else if (fieldError('username', 'minlength') ||
               fieldError('username', 'maxlength')) {
-              <p class="text-red-400 text-xs mt-1">Entre 3 y 30 caracteres</p>
+              <p class="text-orange-400 text-xs mt-1">Entre 3 y 30 caracteres</p>
               } @else if (fieldError('username', 'pattern')) {
-              <p class="text-red-400 text-xs mt-1">
+              <p class="text-orange-400 text-xs mt-1">
                 Solo letras, números y guiones bajos
               </p>
               }
@@ -85,14 +84,14 @@ function passwordMatchValidator(
                 autocomplete="new-password"
                 placeholder="••••••••"
                 class="w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-                [class.border-red-500]="fieldInvalid('password')"
+                       focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                [class.border-orange-500]="fieldInvalid('password')"
                 [class.border-gray-700]="!fieldInvalid('password')"
               />
               @if (fieldError('password', 'required')) {
-              <p class="text-red-400 text-xs mt-1">Campo obligatorio</p>
+              <p class="text-orange-400 text-xs mt-1">Campo obligatorio</p>
               } @else if (fieldError('password', 'weakPassword')) {
-              <p class="text-red-400 text-xs mt-1">
+              <p class="text-orange-400 text-xs mt-1">
                 Mínimo 8 caracteres con mayúscula, minúscula, número y carácter
                 especial
               </p>
@@ -124,12 +123,12 @@ function passwordMatchValidator(
                 autocomplete="new-password"
                 placeholder="••••••••"
                 class="w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-                [class.border-red-500]="confirmInvalid()"
+                       focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                [class.border-orange-500]="confirmInvalid()"
                 [class.border-gray-700]="!confirmInvalid()"
               />
               @if (confirmInvalid()) {
-              <p class="text-red-400 text-xs mt-1">
+              <p class="text-orange-400 text-xs mt-1">
                 Las contraseñas no coinciden
               </p>
               }
@@ -138,7 +137,7 @@ function passwordMatchValidator(
             <!-- Error -->
             @if (error()) {
             <div
-              class="mb-5 bg-red-900/40 border border-red-700 rounded-lg px-4 py-3 text-red-300 text-sm"
+              class="mb-5 bg-orange-900/40 border border-orange-700 rounded-lg px-4 py-3 text-orange-300 text-sm"
             >
               {{ error() }}
             </div>
@@ -148,7 +147,7 @@ function passwordMatchValidator(
             <button
               type="submit"
               [disabled]="loading()"
-              class="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed
+              class="w-full bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed
                      text-white font-semibold py-3 rounded-lg transition-colors"
             >
               @if (loading()) {
@@ -183,7 +182,7 @@ function passwordMatchValidator(
             ¿Ya tienes cuenta?
             <a
               routerLink="/login"
-              class="text-red-400 hover:text-red-300 font-medium ml-1"
+              class="text-orange-400 hover:text-orange-300 font-medium ml-1"
             >
               Inicia sesión
             </a>

@@ -10,6 +10,7 @@ export interface Movie {
   runtime: number;
   genres: string; // JSON: string[]
   magnet_link: string;
+  progress_seconds: number;
   created_at: string;
 }
 

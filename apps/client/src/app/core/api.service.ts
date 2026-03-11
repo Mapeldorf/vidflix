@@ -43,4 +43,10 @@ export class ApiService {
   eliminarPelicula(id: number): Observable<{ success: boolean }> {
     return this.http.delete<{ success: boolean }>(`/api/movies/${id}`);
   }
+
+  guardarProgreso(id: number, progressSeconds: number): Observable<{ success: boolean }> {
+    return this.http.put<{ success: boolean }>(`/api/movies/${id}/progress`, {
+      progress_seconds: progressSeconds,
+    });
+  }
 }

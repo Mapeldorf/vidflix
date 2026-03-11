@@ -1,8 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type { Movie } from '@vidflix/shared-types';
 import { ApiService } from '../../core/api.service';
+
+const PROGRESS_MIN_SECONDS = 10;
 
 @Component({
   selector: 'app-player',
@@ -55,11 +66,11 @@ import { ApiService } from '../../core/api.service';
         <video
           #videoEl
           controls
-          autoplay
           class="w-full aspect-video"
           [src]="streamUrl()"
           [class.hidden]="!videoListo()"
           (loadedmetadata)="onMetadata()"
+          (ended)="onEnded()"
           (error)="onVideoError()"
         ></video>
 
@@ -82,9 +93,43 @@ import { ApiService } from '../../core/api.service';
       <p class="text-gray-400 mt-6 leading-relaxed">{{ m.overview }}</p>
       } }
     </div>
+
+    <!-- Modal de reanudación -->
+    @if (mostrarModal()) {
+    <div
+      class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+    >
+      <div
+        class="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-sm w-full shadow-2xl"
+      >
+        <h2 class="text-white font-bold text-lg mb-2">Continuar viendo</h2>
+        <p class="text-gray-400 text-sm mb-6">
+          Dejaste esta película en
+          <span class="text-white font-medium">{{
+            formatTime(progresoGuardado())
+          }}</span
+          >. ¿Desde dónde quieres reproducirla?
+        </p>
+        <div class="flex flex-col gap-3">
+          <button
+            (click)="reanudar()"
+            class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 rounded-lg transition-colors"
+          >
+            Continuar desde {{ formatTime(progresoGuardado()) }}
+          </button>
+          <button
+            (click)="empezarDesdeElPrincipio()"
+            class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium py-2.5 rounded-lg transition-colors"
+          >
+            Empezar desde el principio
+          </button>
+        </div>
+      </div>
+    </div>
+    }
   `,
 })
-export class PlayerComponent implements OnInit {
+export class PlayerComponent implements OnInit, OnDestroy {
   private readonly api = inject(ApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -96,6 +141,11 @@ export class PlayerComponent implements OnInit {
   error = signal('');
   videoListo = signal(false);
   streamUrl = signal('');
+  mostrarModal = signal(false);
+  progresoGuardado = signal(0);
+
+  private movieId = 0;
+  private progressSaved = false;
 
   parseGenres(genresJson: string): string[] {
     try {
@@ -105,14 +155,27 @@ export class PlayerComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.streamUrl.set(`/api/stream/${id}`);
+  formatTime(seconds: number): string {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    if (h > 0) {
+      return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+    return `${m}:${String(s).padStart(2, '0')}`;
+  }
 
-    this.api.obtenerPelicula(id).subscribe({
+  ngOnInit() {
+    this.movieId = Number(this.route.snapshot.paramMap.get('id'));
+    this.streamUrl.set(`/api/stream/${this.movieId}`);
+
+    this.api.obtenerPelicula(this.movieId).subscribe({
       next: (m) => {
         this.pelicula.set(m);
         this.loading.set(false);
+        if ((m.progress_seconds ?? 0) > PROGRESS_MIN_SECONDS) {
+          this.progresoGuardado.set(m.progress_seconds);
+        }
       },
       error: (err) => {
         this.error.set(err.error?.error || 'Error cargando la película');
@@ -123,15 +186,64 @@ export class PlayerComponent implements OnInit {
 
   onMetadata() {
     this.videoListo.set(true);
-    this.videoEl.nativeElement.play().catch(() => {
-      // El navegador bloqueó el autoplay (política de audio); el usuario puede pulsar play
-    });
+    if (this.progresoGuardado() > 0) {
+      // Hay progreso guardado: mostrar modal y no reproducir aún
+      this.mostrarModal.set(true);
+    } else {
+      this.videoEl.nativeElement.play().catch(() => {});
+    }
+  }
+
+  reanudar() {
+    this.mostrarModal.set(false);
+    const video = this.videoEl.nativeElement;
+    video.currentTime = this.progresoGuardado();
+    video.play().catch(() => {});
+  }
+
+  empezarDesdeElPrincipio() {
+    this.mostrarModal.set(false);
+    this.progresoGuardado.set(0);
+    this.videoEl.nativeElement.play().catch(() => {});
+  }
+
+  onEnded() {
+    // Película terminada: borrar progreso guardado
+    this.progressSaved = true;
+    this.api.guardarProgreso(this.movieId, 0).subscribe();
   }
 
   onVideoError() {
     this.error.set(
       'Error al reproducir el vídeo. El torrent puede estar tardando en conectar.'
     );
+  }
+
+  // Guarda el progreso si el usuario cierra la pestaña o recarga
+  @HostListener('window:beforeunload')
+  onBeforeUnload() {
+    if (this.progressSaved || !this.videoEl?.nativeElement) return;
+    const t = Math.floor(this.videoEl.nativeElement.currentTime);
+    if (t > 0) {
+      fetch(`/api/movies/${this.movieId}/progress`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ progress_seconds: t }),
+        credentials: 'include',
+        keepalive: true,
+      });
+      this.progressSaved = true;
+    }
+  }
+
+  // Guarda el progreso al navegar dentro de la app (Angular router)
+  ngOnDestroy() {
+    if (this.progressSaved || !this.videoEl?.nativeElement) return;
+    const t = Math.floor(this.videoEl.nativeElement.currentTime);
+    if (t > 0) {
+      this.progressSaved = true;
+      this.api.guardarProgreso(this.movieId, t).subscribe();
+    }
   }
 
   volver() {

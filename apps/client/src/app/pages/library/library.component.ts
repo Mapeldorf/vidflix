@@ -25,12 +25,12 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
       @if (loading()) {
       <div class="flex justify-center py-16">
         <div
-          class="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent"
+          class="animate-spin rounded-full h-12 w-12 border-4 border-orange-500 border-t-transparent"
         ></div>
       </div>
       } @else if (error()) {
       <div
-        class="bg-red-900/30 border border-red-700 text-red-300 rounded-lg p-4"
+        class="bg-orange-900/30 border border-orange-700 text-orange-300 rounded-lg p-4"
       >
         {{ error() }}
       </div>
@@ -43,7 +43,7 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
         </p>
         <button
           (click)="irABuscar()"
-          class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
+          class="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
         >
           Buscar películas
         </button>
@@ -59,34 +59,46 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
           (input)="tituloBusqueda.set($any($event.target).value)"
           placeholder="Buscar por título..."
           class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white
-                 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
         />
 
-        <!-- Chips de género -->
-        @if (todosGeneros().length > 0) {
+        <!-- Chips de filtro -->
         <div class="flex flex-wrap gap-2">
+          <!-- Filtro: en progreso -->
+          <button
+            (click)="soloEnProgreso.set(!soloEnProgreso())"
+            class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+            [class]="
+              soloEnProgreso()
+                ? 'bg-orange-600 text-white'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            "
+          >
+            ▶ En progreso
+          </button>
+
+          <!-- Chips de género -->
           @for (genero of todosGeneros(); track genero) {
           <button
             (click)="toggleGenero(genero)"
             class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
             [class]="
               generosSeleccionados().has(genero)
-                ? 'bg-red-600 text-white'
+                ? 'bg-orange-600 text-white'
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             "
           >
             {{ genero }}
           </button>
-          } @if (generosSeleccionados().size > 0) {
+          } @if (hayFiltros()) {
           <button
-            (click)="limpiarGeneros()"
+            (click)="limpiarFiltros()"
             class="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-700 text-gray-400 hover:bg-gray-600 transition-colors"
           >
             ✕ Limpiar
           </button>
           }
         </div>
-        }
       </div>
 
       <!-- Grid o estado sin resultados -->
@@ -133,12 +145,22 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
             </div>
             }
 
+            <!-- Barra de progreso -->
+            @if (progressPct(pelicula) > 0) {
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
+              <div
+                class="h-full bg-orange-500"
+                [style.width.%]="progressPct(pelicula)"
+              ></div>
+            </div>
+            }
+
             <!-- Play overlay -->
             <div
               class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
             >
               <div
-                class="bg-red-600 rounded-full w-14 h-14 flex items-center justify-center shadow-lg"
+                class="bg-orange-600 rounded-full w-14 h-14 flex items-center justify-center shadow-lg"
               >
                 <span class="text-white text-2xl ml-1">▶</span>
               </div>
@@ -156,9 +178,9 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
             <div class="flex gap-2 mt-2">
               <button
                 (click)="reproducir(pelicula.id)"
-                class="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium py-1.5 rounded-lg transition-colors"
+                class="flex-1 bg-orange-600 hover:bg-orange-700 text-white text-xs font-medium py-1.5 rounded-lg transition-colors"
               >
-                ▶ Reproducir
+                {{ progressPct(pelicula) > 0 ? '▶ Continuar' : '▶ Reproducir' }}
               </button>
               <button
                 (click)="confirmarEliminar(pelicula)"
@@ -201,7 +223,7 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
           <button
             (click)="eliminar()"
             [disabled]="eliminando()"
-            class="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-900 text-white font-semibold py-2.5 rounded-xl transition-colors"
+            class="flex-1 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-900 text-white font-semibold py-2.5 rounded-xl transition-colors"
           >
             {{ eliminando() ? 'Eliminando...' : 'Eliminar' }}
           </button>
@@ -229,6 +251,7 @@ export class LibraryComponent implements OnInit {
 
   tituloBusqueda = signal('');
   generosSeleccionados = signal<Set<string>>(new Set());
+  soloEnProgreso = signal(false);
 
   todosGeneros = computed(() => {
     const generos = new Set<string>();
@@ -246,8 +269,10 @@ export class LibraryComponent implements OnInit {
   peliculasFiltradas = computed(() => {
     const titulo = this.tituloBusqueda().trim().toLowerCase();
     const generos = this.generosSeleccionados();
+    const enProgreso = this.soloEnProgreso();
     return this.peliculas().filter((p) => {
       if (titulo && !p.title.toLowerCase().includes(titulo)) return false;
+      if (enProgreso && (p.progress_seconds ?? 0) <= 10) return false;
       if (generos.size > 0) {
         let lista: string[] = [];
         try {
@@ -266,10 +291,17 @@ export class LibraryComponent implements OnInit {
   hayFiltros = computed(
     () =>
       this.tituloBusqueda().trim().length > 0 ||
-      this.generosSeleccionados().size > 0
+      this.generosSeleccionados().size > 0 ||
+      this.soloEnProgreso()
   );
 
   readonly imgUrl = (path: string) => `${TMDB_IMG}${path}`;
+
+  progressPct(pelicula: Movie): number {
+    if (!pelicula.progress_seconds || pelicula.progress_seconds <= 10) return 0;
+    if (!pelicula.runtime) return 0;
+    return Math.min(Math.round((pelicula.progress_seconds / (pelicula.runtime * 60)) * 100), 100);
+  }
 
   ngOnInit() {
     this.cargarBiblioteca();
@@ -301,13 +333,10 @@ export class LibraryComponent implements OnInit {
     });
   }
 
-  limpiarGeneros() {
-    this.generosSeleccionados.set(new Set());
-  }
-
   limpiarFiltros() {
     this.tituloBusqueda.set('');
     this.generosSeleccionados.set(new Set());
+    this.soloEnProgreso.set(false);
   }
 
   reproducir(id: number) {

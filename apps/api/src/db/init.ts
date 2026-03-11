@@ -92,4 +92,11 @@ if (userColumns.some((c) => c.name === 'email')) {
   console.log('Migración completada.');
 }
 
+// Migration: add progress_seconds column if missing
+const movieColumnsV2 = db.pragma('table_info(movies)') as Array<{ name: string }>;
+if (!movieColumnsV2.some((c) => c.name === 'progress_seconds')) {
+  db.exec('ALTER TABLE movies ADD COLUMN progress_seconds INTEGER DEFAULT 0');
+  console.log('Migración movies: añadida columna progress_seconds.');
+}
+
 console.log(`SQLite database initialized at: ${dbPath}`);

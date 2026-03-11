@@ -12,8 +12,7 @@ import { AuthService } from '../auth.service';
       <div class="w-full max-w-md">
         <!-- Logo -->
         <div class="text-center mb-8">
-          <span class="text-red-500 text-4xl">🎬</span>
-          <h1 class="text-white text-3xl font-bold mt-2">VidFlix</h1>
+          <img src="/logo.svg" alt="VidFlix" class="h-16 w-auto block mx-auto" />
           <p class="text-gray-400 mt-1">Inicia sesión para continuar</p>
         </div>
 
@@ -33,12 +32,12 @@ import { AuthService } from '../auth.service';
                 autocomplete="username"
                 placeholder="tu nombre"
                 class="w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-                [class.border-red-500]="fieldInvalid('login')"
+                       focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                [class.border-orange-500]="fieldInvalid('login')"
                 [class.border-gray-700]="!fieldInvalid('login')"
               />
               @if (fieldInvalid('login')) {
-              <p class="text-red-400 text-xs mt-1">Campo obligatorio</p>
+              <p class="text-orange-400 text-xs mt-1">Campo obligatorio</p>
               }
             </div>
 
@@ -53,19 +52,19 @@ import { AuthService } from '../auth.service';
                 autocomplete="current-password"
                 placeholder="••••••••"
                 class="w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-                [class.border-red-500]="fieldInvalid('password')"
+                       focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                [class.border-orange-500]="fieldInvalid('password')"
                 [class.border-gray-700]="!fieldInvalid('password')"
               />
               @if (fieldInvalid('password')) {
-              <p class="text-red-400 text-xs mt-1">Campo obligatorio</p>
+              <p class="text-orange-400 text-xs mt-1">Campo obligatorio</p>
               }
             </div>
 
             <!-- Error -->
             @if (error()) {
             <div
-              class="mb-5 bg-red-900/40 border border-red-700 rounded-lg px-4 py-3 text-red-300 text-sm"
+              class="mb-5 bg-orange-900/40 border border-orange-700 rounded-lg px-4 py-3 text-orange-300 text-sm"
             >
               {{ error() }}
             </div>
@@ -75,7 +74,7 @@ import { AuthService } from '../auth.service';
             <button
               type="submit"
               [disabled]="loading()"
-              class="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed
+              class="w-full bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed
                      text-white font-semibold py-3 rounded-lg transition-colors"
             >
               @if (loading()) {
@@ -110,7 +109,7 @@ import { AuthService } from '../auth.service';
             ¿No tienes cuenta?
             <a
               routerLink="/registro"
-              class="text-red-400 hover:text-red-300 font-medium ml-1"
+              class="text-orange-400 hover:text-orange-300 font-medium ml-1"
             >
               Regístrate
             </a>
@@ -146,7 +145,7 @@ export class LoginComponent {
     this.error.set(null);
 
     this.authService.login(this.form.getRawValue()).subscribe({
-      next: () => this.router.navigate(['/buscar']),
+      next: () => this.router.navigate(['/biblioteca']),
       error: (err) => {
         this.error.set(err.error?.error ?? 'Error al iniciar sesión');
         this.loading.set(false);
