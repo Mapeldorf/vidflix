@@ -70,8 +70,8 @@ function startTorrent(id: number, magnetLink: string): Promise<ActiveTorrent> {
       : magnetLink;
 
     // Silence unhandled errors after promise settles to avoid crashing the process
-    client.on('error', (err: Error) => {
-      console.error(`[stream] WebTorrent error for movie ${id}:`, err.message);
+    client.on('error', (err: string | Error) => {
+      console.error(`[stream] WebTorrent error for movie ${id}:`, err instanceof Error ? err.message : err);
       if (pendingTorrents.has(id)) {
         clearTimeout(timeout);
         pendingTorrents.delete(id);
@@ -133,7 +133,10 @@ streamRouter.get('/:id', async (req: Request, res: Response) => {
     active.lastAccessAt = Date.now();
     active.activeConnections++;
 
+    let done = false;
     const onDone = () => {
+      if (done) return;
+      done = true;
       active.activeConnections--;
       active.lastAccessAt = Date.now();
     };

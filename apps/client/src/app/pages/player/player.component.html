@@ -45,6 +45,7 @@
         <video
           #videoEl
           controls
+          preload="metadata"
           class="w-full aspect-video"
           [src]="streamUrl()"
           [class.hidden]="!videoListo()"
