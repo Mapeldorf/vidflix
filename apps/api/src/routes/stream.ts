@@ -133,19 +133,12 @@ streamRouter.get('/:id', async (req: Request, res: Response) => {
     active.lastAccessAt = Date.now();
     active.activeConnections++;
 
-    let done = false;
-    const onDone = () => {
-      if (done) return;
-      done = true;
-      active.activeConnections--;
-      active.lastAccessAt = Date.now();
-    };
-    res.on('close', onDone);
-    res.on('finish', onDone);
-
     const fileSize = videoFile.length;
     const mimeType = getMimeType(videoFile.name);
     const range = req.headers['range'];
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let torrentStream: any;
 
     if (range) {
       const [startStr, endStr] = range.replace(/bytes=/, '').split('-');
@@ -160,11 +153,7 @@ streamRouter.get('/:id', async (req: Request, res: Response) => {
         'Content-Type': mimeType,
       });
 
-      const stream = videoFile.createReadStream({ start, end });
-      stream.on('error', (err: Error) => {
-        console.error(`[stream] Pipe error for movie ${id}:`, err.message);
-      });
-      stream.pipe(res);
+      torrentStream = videoFile.createReadStream({ start, end });
     } else {
       res.writeHead(200, {
         'Content-Length': fileSize,
@@ -172,12 +161,24 @@ streamRouter.get('/:id', async (req: Request, res: Response) => {
         'Content-Type': mimeType,
       });
 
-      const stream = videoFile.createReadStream();
-      stream.on('error', (err: Error) => {
-        console.error(`[stream] Pipe error for movie ${id}:`, err.message);
-      });
-      stream.pipe(res);
+      torrentStream = videoFile.createReadStream();
     }
+
+    let done = false;
+    const onDone = () => {
+      if (done) return;
+      done = true;
+      torrentStream.destroy();
+      active.activeConnections--;
+      active.lastAccessAt = Date.now();
+    };
+    res.on('close', onDone);
+    res.on('finish', onDone);
+
+    torrentStream.on('error', (err: Error) => {
+      console.error(`[stream] Pipe error for movie ${id}:`, err.message);
+    });
+    torrentStream.pipe(res);
   } catch (err) {
     console.error(`[stream] Error para movie ${id}:`, err);
     if (!res.headersSent) {
