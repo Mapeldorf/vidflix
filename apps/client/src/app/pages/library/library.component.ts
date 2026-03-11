@@ -309,14 +309,6 @@ const TMDB_IMG_SM = 'https://image.tmdb.org/t/p/w185';
               @if (pelicula.release_date) {
               <span>{{ pelicula.release_date | date:'d MMM yyyy' }}</span>
               }
-              @if (pelicula.vote_average) {
-              <span class="flex items-center gap-1">
-                <svg viewBox="0 0 24 24" fill="#facc15" class="w-3.5 h-3.5 flex-shrink-0">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>
-                </svg>
-                {{ pelicula.vote_average | number:'1.1-1' }}
-              </span>
-              }
               @if (pelicula.runtime) {
               <span>{{ formatRuntime(pelicula.runtime) }}</span>
               }
@@ -328,6 +320,27 @@ const TMDB_IMG_SM = 'https://image.tmdb.org/t/p/w185';
                   <path d="M6 13v2a6 6 0 0 0 12 0v-2"/>
                 </svg>
                 Torrent
+              </span>
+              }
+              @if (pelicula.vote_average) {
+              <span class="flex items-center gap-0.5 ml-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute">
+                  <defs>
+                    <linearGradient id="star-half" x1="0" x2="1" y1="0" y2="0">
+                      <stop offset="50%" stop-color="#facc15"/>
+                      <stop offset="50%" stop-color="#4b5563"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                @for (estado of estrellas(pelicula.vote_average); track $index) {
+                <svg viewBox="0 0 24 24" class="w-3 h-3 flex-shrink-0">
+                  <path
+                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"
+                    [attr.fill]="estado === 'full' ? '#facc15' : estado === 'half' ? 'url(#star-half)' : '#4b5563'"
+                  />
+                </svg>
+                }
+                <span class="text-xs text-gray-400 ml-1">{{ pelicula.vote_average | number:'1.1-1' }}</span>
               </span>
               }
             </div>
@@ -532,6 +545,14 @@ export class LibraryComponent implements OnInit {
     } catch {
       return '';
     }
+  }
+
+  estrellas(voteAverage: number): Array<'full' | 'half' | 'empty'> {
+    return Array.from({ length: 10 }, (_, i) => {
+      if (voteAverage >= i + 1) return 'full';
+      if (voteAverage >= i + 0.5) return 'half';
+      return 'empty';
+    });
   }
 
   progressPct(pelicula: Movie): number {
