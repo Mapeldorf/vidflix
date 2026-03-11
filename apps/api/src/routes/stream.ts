@@ -47,6 +47,8 @@ function getMimeType(filename: string): string {
   return types[ext] ?? 'video/mp4';
 }
 
+const TORRENT_START_TIMEOUT_MS = 45_000; // 45s — below Fly.io's 60s proxy timeout
+
 function startTorrent(id: number, magnetLink: string): Promise<ActiveTorrent> {
   const existing = activeTorrents.get(id);
   if (existing) return Promise.resolve(existing);
@@ -55,6 +57,11 @@ function startTorrent(id: number, magnetLink: string): Promise<ActiveTorrent> {
   if (pending) return pending;
 
   const promise = new Promise<ActiveTorrent>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      pendingTorrents.delete(id);
+      activeTorrents.delete(id);
+      reject(new Error('Timeout esperando peers del torrent'));
+    }, TORRENT_START_TIMEOUT_MS);
     const client =
       new (WebTorrent as unknown as new () => WebTorrent.Instance)();
 
@@ -66,6 +73,7 @@ function startTorrent(id: number, magnetLink: string): Promise<ActiveTorrent> {
     client.on('error', (err: Error) => {
       console.error(`[stream] WebTorrent error for movie ${id}:`, err.message);
       if (pendingTorrents.has(id)) {
+        clearTimeout(timeout);
         pendingTorrents.delete(id);
         activeTorrents.delete(id);
         reject(err);
@@ -79,12 +87,14 @@ function startTorrent(id: number, magnetLink: string): Promise<ActiveTorrent> {
         ) ?? torrent.files[0];
 
       if (!videoFile) {
+        clearTimeout(timeout);
         client.destroy();
         pendingTorrents.delete(id);
         reject(new Error('No se encontró archivo de video en el torrent'));
         return;
       }
 
+      clearTimeout(timeout);
       console.log(
         `[stream] Torrent listo para movie ${id}: ${videoFile.name} (${videoFile.length} bytes)`
       );
