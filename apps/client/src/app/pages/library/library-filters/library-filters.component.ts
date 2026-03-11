@@ -16,21 +16,31 @@ export interface FiltrosBiblioteca {
 })
 export class LibraryFiltersComponent {
   todosGeneros = input<string[]>([]);
+
   filtrosChange = output<FiltrosBiblioteca>();
 
   tituloBusqueda = signal('');
+
   generosSeleccionados = signal<Set<string>>(new Set());
+
   filtroEstado = signal<FiltrosBiblioteca['filtroEstado']>('todas');
+
   orden = signal<FiltrosBiblioteca['orden']>('recientes');
 
-  readonly estadoOpciones: { value: FiltrosBiblioteca['filtroEstado']; label: string }[] = [
+  readonly estadoOpciones: {
+    value: FiltrosBiblioteca['filtroEstado'];
+    label: string;
+  }[] = [
     { value: 'todas', label: 'Todas' },
     { value: 'en-progreso', label: 'En progreso' },
     { value: 'ya-vistas', label: 'Ya vistas' },
     { value: 'no-vistas', label: 'No vistas' },
   ];
 
-  readonly ordenOpciones: { value: FiltrosBiblioteca['orden']; label: string }[] = [
+  readonly ordenOpciones: {
+    value: FiltrosBiblioteca['orden'];
+    label: string;
+  }[] = [
     { value: 'recientes', label: 'Recientes' },
     { value: 'valoracion', label: 'Valoración' },
     { value: 'titulo', label: 'Alfabético' },
