@@ -63,7 +63,7 @@ function startTorrent(id: number, magnetLink: string): Promise<ActiveTorrent> {
       reject(new Error('Timeout esperando peers del torrent'));
     }, TORRENT_START_TIMEOUT_MS);
     const client =
-      new (WebTorrent as unknown as new () => WebTorrent.Instance)();
+      new (WebTorrent as unknown as new (opts?: object) => WebTorrent.Instance)({ utp: false });
 
     const source: string | Buffer = magnetLink.startsWith('torrent:base64,')
       ? Buffer.from(magnetLink.slice('torrent:base64,'.length), 'base64')
