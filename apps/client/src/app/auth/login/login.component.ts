@@ -18,7 +18,9 @@ import { AuthService } from '../auth.service';
         </div>
 
         <!-- Card -->
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
+        <div
+          class="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl"
+        >
           <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
             <!-- Login (username or email) -->
             <div class="mb-5">
@@ -29,14 +31,14 @@ import { AuthService } from '../auth.service';
                 formControlName="login"
                 type="text"
                 autocomplete="username"
-                placeholder="tunombre"
+                placeholder="tu nombre"
                 class="w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500
                        focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                 [class.border-red-500]="fieldInvalid('login')"
                 [class.border-gray-700]="!fieldInvalid('login')"
               />
               @if (fieldInvalid('login')) {
-                <p class="text-red-400 text-xs mt-1">Campo obligatorio</p>
+              <p class="text-red-400 text-xs mt-1">Campo obligatorio</p>
               }
             </div>
 
@@ -56,15 +58,17 @@ import { AuthService } from '../auth.service';
                 [class.border-gray-700]="!fieldInvalid('password')"
               />
               @if (fieldInvalid('password')) {
-                <p class="text-red-400 text-xs mt-1">Campo obligatorio</p>
+              <p class="text-red-400 text-xs mt-1">Campo obligatorio</p>
               }
             </div>
 
             <!-- Error -->
             @if (error()) {
-              <div class="mb-5 bg-red-900/40 border border-red-700 rounded-lg px-4 py-3 text-red-300 text-sm">
-                {{ error() }}
-              </div>
+            <div
+              class="mb-5 bg-red-900/40 border border-red-700 rounded-lg px-4 py-3 text-red-300 text-sm"
+            >
+              {{ error() }}
+            </div>
             }
 
             <!-- Submit -->
@@ -75,23 +79,39 @@ import { AuthService } from '../auth.service';
                      text-white font-semibold py-3 rounded-lg transition-colors"
             >
               @if (loading()) {
-                <span class="flex items-center justify-center gap-2">
-                  <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                  </svg>
-                  Iniciando sesión...
-                </span>
-              } @else {
-                Iniciar sesión
-              }
+              <span class="flex items-center justify-center gap-2">
+                <svg
+                  class="animate-spin h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  />
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8z"
+                  />
+                </svg>
+                Iniciando sesión...
+              </span>
+              } @else { Iniciar sesión }
             </button>
           </form>
 
           <!-- Register link -->
           <p class="text-center text-gray-400 text-sm mt-6">
             ¿No tienes cuenta?
-            <a routerLink="/registro" class="text-red-400 hover:text-red-300 font-medium ml-1">
+            <a
+              routerLink="/registro"
+              class="text-red-400 hover:text-red-300 font-medium ml-1"
+            >
               Regístrate
             </a>
           </p>

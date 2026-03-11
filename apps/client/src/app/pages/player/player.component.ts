@@ -1,8 +1,8 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../../core/api.service';
+import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import type { Movie } from '@vidflix/shared-types';
+import { ApiService } from '../../core/api.service';
 
 @Component({
   selector: 'app-player',
@@ -53,11 +53,13 @@ import type { Movie } from '@vidflix/shared-types';
       <!-- Video player -->
       <div class="bg-black rounded-xl overflow-hidden shadow-2xl">
         <video
+          #videoEl
           controls
+          autoplay
           class="w-full aspect-video"
           [src]="streamUrl()"
           [class.hidden]="!videoListo()"
-          (loadedmetadata)="videoListo.set(true)"
+          (loadedmetadata)="onMetadata()"
           (error)="onVideoError()"
         ></video>
 
@@ -87,6 +89,8 @@ export class PlayerComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
+  @ViewChild('videoEl') videoEl!: ElementRef<HTMLVideoElement>;
+
   pelicula = signal<Movie | null>(null);
   loading = signal(true);
   error = signal('');
@@ -114,6 +118,13 @@ export class PlayerComponent implements OnInit {
         this.error.set(err.error?.error || 'Error cargando la película');
         this.loading.set(false);
       },
+    });
+  }
+
+  onMetadata() {
+    this.videoListo.set(true);
+    this.videoEl.nativeElement.play().catch(() => {
+      // El navegador bloqueó el autoplay (política de audio); el usuario puede pulsar play
     });
   }
 

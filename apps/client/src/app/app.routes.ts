@@ -15,7 +15,9 @@ export const appRoutes: Route[] = [
     path: 'registro',
     canActivate: [guestGuard],
     loadComponent: () =>
-      import('./auth/register/register.component').then((m) => m.RegisterComponent),
+      import('./auth/register/register.component').then(
+        (m) => m.RegisterComponent
+      ),
   },
 
   // Protected pages
@@ -37,7 +39,9 @@ export const appRoutes: Route[] = [
     path: 'biblioteca',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/library/library.component').then((m) => m.LibraryComponent),
+      import('./pages/library/library.component').then(
+        (m) => m.LibraryComponent
+      ),
   },
   {
     path: 'reproducir/:id',

@@ -4,13 +4,35 @@ import { db } from '../db/init';
 
 export const streamRouter = Router();
 
+const IDLE_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutos sin uso → destruir
+const CLEANUP_INTERVAL_MS = 60 * 1000;  // revisar cada minuto
+
 interface ActiveTorrent {
   client: WebTorrent.Instance;
   videoFile: WebTorrent.TorrentFile;
+  lastAccessAt: number;
+  activeConnections: number;
 }
 
 const activeTorrents = new Map<number, ActiveTorrent>();
 const pendingTorrents = new Map<number, Promise<ActiveTorrent>>();
+
+function destroyTorrent(id: number): void {
+  const entry = activeTorrents.get(id);
+  if (!entry) return;
+  console.log(`[stream] Destruyendo torrent inactivo para movie ${id}`);
+  entry.client.destroy();
+  activeTorrents.delete(id);
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [id, entry] of activeTorrents) {
+    if (entry.activeConnections === 0 && now - entry.lastAccessAt > IDLE_TIMEOUT_MS) {
+      destroyTorrent(id);
+    }
+  }
+}, CLEANUP_INTERVAL_MS).unref();
 
 function getMimeType(filename: string): string {
   const ext = filename.split('.').pop()?.toLowerCase() ?? '';
@@ -66,7 +88,7 @@ function startTorrent(id: number, magnetLink: string): Promise<ActiveTorrent> {
       console.log(
         `[stream] Torrent listo para movie ${id}: ${videoFile.name} (${videoFile.length} bytes)`
       );
-      const active: ActiveTorrent = { client, videoFile };
+      const active: ActiveTorrent = { client, videoFile, lastAccessAt: Date.now(), activeConnections: 0 };
       activeTorrents.set(id, active);
       pendingTorrents.delete(id);
       resolve(active);
@@ -96,7 +118,18 @@ streamRouter.get('/:id', async (req: Request, res: Response) => {
   console.log(`[stream] Solicitud para movie ${id}`);
 
   try {
-    const { videoFile } = await startTorrent(id, movie.magnet_link);
+    const active = await startTorrent(id, movie.magnet_link);
+    const { videoFile } = active;
+    active.lastAccessAt = Date.now();
+    active.activeConnections++;
+
+    const onDone = () => {
+      active.activeConnections--;
+      active.lastAccessAt = Date.now();
+    };
+    res.on('close', onDone);
+    res.on('finish', onDone);
+
     const fileSize = videoFile.length;
     const mimeType = getMimeType(videoFile.name);
     const range = req.headers['range'];

@@ -1,8 +1,4 @@
-import {
-  Component,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -60,7 +56,7 @@ function passwordMatchValidator(
                 formControlName="username"
                 type="text"
                 autocomplete="username"
-                placeholder="tunombre"
+                placeholder="tu nombre"
                 class="w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500
                        focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                 [class.border-red-500]="fieldInvalid('username')"
@@ -282,14 +278,12 @@ export class RegisterComponent {
     this.error.set(null);
 
     const { username, password } = this.form.getRawValue();
-    this.authService
-      .register({ username, password })
-      .subscribe({
-        next: () => this.router.navigate(['/buscar']),
-        error: (err) => {
-          this.error.set(err.error?.error ?? 'Error al crear la cuenta');
-          this.loading.set(false);
-        },
-      });
+    this.authService.register({ username, password }).subscribe({
+      next: () => this.router.navigate(['/buscar']),
+      error: (err) => {
+        this.error.set(err.error?.error ?? 'Error al crear la cuenta');
+        this.loading.set(false);
+      },
+    });
   }
 }
