@@ -52,15 +52,35 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
 
       <!-- Filtros -->
       <div class="mb-6 space-y-4">
-        <!-- Búsqueda por título -->
-        <input
-          type="search"
-          [value]="tituloBusqueda()"
-          (input)="tituloBusqueda.set($any($event.target).value)"
-          placeholder="Buscar por título..."
-          class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white
-                 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-        />
+        <!-- Búsqueda + orden -->
+        <div class="flex flex-col md:flex-row gap-3">
+          <input
+            type="search"
+            [value]="tituloBusqueda()"
+            (input)="tituloBusqueda.set($any($event.target).value)"
+            placeholder="Buscar por título..."
+            class="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white
+                   placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+          />
+          <div
+            class="flex rounded-xl overflow-hidden border border-gray-700 text-sm flex-shrink-0 self-start"
+          >
+            @for (op of ordenOpciones; track op.value) {
+            <button
+              type="button"
+              (click)="orden.set(op.value)"
+              class="px-3 py-3 transition-colors whitespace-nowrap"
+              [class]="
+                orden() === op.value
+                  ? 'bg-orange-600 text-white font-medium'
+                  : 'bg-gray-800 text-gray-400 hover:text-white'
+              "
+            >
+              {{ op.label }}
+            </button>
+            }
+          </div>
+        </div>
 
         <!-- Chips de filtro -->
         <div class="flex flex-wrap gap-2">
@@ -74,7 +94,7 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             "
           >
-            ▶ En progreso
+            En progreso
           </button>
 
           <!-- Chips de género -->
@@ -145,6 +165,16 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
             </div>
             }
 
+            <!-- Valoración -->
+            @if (pelicula.vote_average) {
+            <div class="absolute top-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm rounded-md px-1.5 py-0.5">
+              <svg viewBox="0 0 24 24" fill="#facc15" class="w-3 h-3 flex-shrink-0">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>
+              </svg>
+              <span class="text-white text-xs font-medium leading-none">{{ pelicula.vote_average | number:'1.1-1' }}</span>
+            </div>
+            }
+
             <!-- Barra de progreso -->
             @if (progressPct(pelicula) > 0) {
             <div class="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
@@ -160,36 +190,47 @@ const TMDB_IMG = 'https://image.tmdb.org/t/p/w300';
               class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
             >
               <div
-                class="bg-orange-600 rounded-full w-14 h-14 flex items-center justify-center shadow-lg"
+                class="bg-black/50 rounded-full w-14 h-14 flex items-center justify-center"
               >
-                <span class="text-white text-2xl ml-1">▶</span>
+                <svg viewBox="0 0 24 24" fill="white" class="w-7 h-7 ml-1">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
               </div>
             </div>
           </div>
 
-          <div class="p-3">
-            <h3 class="font-semibold text-white text-sm line-clamp-2 mb-1">
-              {{ pelicula.title }}
-            </h3>
-            <p class="text-gray-400 text-xs">
-              {{ pelicula.release_date | slice : 0 : 4 }}
-            </p>
-
-            <div class="flex gap-2 mt-2">
-              <button
-                (click)="reproducir(pelicula.id)"
-                class="flex-1 bg-orange-600 hover:bg-orange-700 text-white text-xs font-medium py-1.5 rounded-lg transition-colors"
+          <div class="p-3 flex items-center gap-2">
+            <div class="flex-1 min-w-0">
+              <h3
+                class="font-medium text-white text-sm truncate leading-snug"
+                [title]="pelicula.title"
               >
-                {{ progressPct(pelicula) > 0 ? '▶ Continuar' : '▶ Reproducir' }}
-              </button>
-              <button
-                (click)="confirmarEliminar(pelicula)"
-                class="bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs px-2 py-1.5 rounded-lg transition-colors"
-                title="Eliminar"
-              >
-                🗑
-              </button>
+                {{ pelicula.title }}
+              </h3>
+              <p class="text-gray-500 text-xs mt-0.5">
+                {{ pelicula.release_date | slice : 0 : 4 }}
+              </p>
             </div>
+            <button
+              (click)="confirmarEliminar(pelicula)"
+              class="flex-shrink-0 text-gray-600 hover:text-red-400 transition-colors"
+              title="Eliminar"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="w-4 h-4"
+              >
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                <path d="M10 11v6M14 11v6" />
+                <path d="M9 6V4h6v2" />
+              </svg>
+            </button>
           </div>
         </div>
         }
@@ -252,6 +293,12 @@ export class LibraryComponent implements OnInit {
   tituloBusqueda = signal('');
   generosSeleccionados = signal<Set<string>>(new Set());
   soloEnProgreso = signal(false);
+  orden = signal<'recientes' | 'valoracion' | 'titulo'>('recientes');
+  readonly ordenOpciones = [
+    { value: 'recientes' as const, label: 'Recientes' },
+    { value: 'valoracion' as const, label: 'Valoración' },
+    { value: 'titulo' as const, label: 'Alfabético' },
+  ];
 
   todosGeneros = computed(() => {
     const generos = new Set<string>();
@@ -270,7 +317,9 @@ export class LibraryComponent implements OnInit {
     const titulo = this.tituloBusqueda().trim().toLowerCase();
     const generos = this.generosSeleccionados();
     const enProgreso = this.soloEnProgreso();
-    return this.peliculas().filter((p) => {
+    const ord = this.orden();
+
+    const filtradas = this.peliculas().filter((p) => {
       if (titulo && !p.title.toLowerCase().includes(titulo)) return false;
       if (enProgreso && (p.progress_seconds ?? 0) <= 10) return false;
       if (generos.size > 0) {
@@ -286,6 +335,13 @@ export class LibraryComponent implements OnInit {
       }
       return true;
     });
+
+    return [...filtradas].sort((a, b) => {
+      if (ord === 'valoracion')
+        return (b.vote_average ?? 0) - (a.vote_average ?? 0);
+      if (ord === 'titulo') return a.title.localeCompare(b.title);
+      return (b.release_date ?? '').localeCompare(a.release_date ?? '');
+    });
   });
 
   hayFiltros = computed(
@@ -297,10 +353,21 @@ export class LibraryComponent implements OnInit {
 
   readonly imgUrl = (path: string) => `${TMDB_IMG}${path}`;
 
+  generosTexto(pelicula: Movie): string {
+    try {
+      return (JSON.parse(pelicula.genres) as string[]).slice(0, 2).join(', ');
+    } catch {
+      return '';
+    }
+  }
+
   progressPct(pelicula: Movie): number {
     if (!pelicula.progress_seconds || pelicula.progress_seconds <= 10) return 0;
     if (!pelicula.runtime) return 0;
-    return Math.min(Math.round((pelicula.progress_seconds / (pelicula.runtime * 60)) * 100), 100);
+    return Math.min(
+      Math.round((pelicula.progress_seconds / (pelicula.runtime * 60)) * 100),
+      100
+    );
   }
 
   ngOnInit() {
