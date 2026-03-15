@@ -9,5 +9,18 @@
   },
   "enabledPlugins": {
     "nx@nx-claude-plugins": true
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/c/Users/chema/Documents/Workspace/vidflix/.claude/hooks/commit-on-stop.sh"
+          }
+        ]
+      }
+    ]
   }
 }
