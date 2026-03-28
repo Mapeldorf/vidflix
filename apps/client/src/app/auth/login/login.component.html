@@ -9,7 +9,7 @@
 
         <!-- Card -->
         <div
-          class="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl"
+          class="bg-gray-900 border border-gray-800 rounded-lg p-8 shadow-sm"
         >
           <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
             <!-- Login (username or email) -->
@@ -23,7 +23,7 @@
                 autocomplete="username"
                 placeholder="tu nombre"
                 class="w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+                       focus:outline-none focus:ring-1 focus:border-gray-500 transition-colors duration-200"
                 [class.border-red-500]="fieldInvalid('login')"
                 [class.border-gray-700]="!fieldInvalid('login')"
               />
@@ -43,7 +43,7 @@
                 autocomplete="current-password"
                 placeholder="••••••••"
                 class="w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+                       focus:outline-none focus:ring-1 focus:border-gray-500 transition-colors duration-200"
                 [class.border-red-500]="fieldInvalid('password')"
                 [class.border-gray-700]="!fieldInvalid('password')"
               />

@@ -24,14 +24,14 @@ La implementación se realizará en el componente `LoginComponent` ubicado en `a
     - Validar que los nuevos colores cumplan WCAG AA (4.5:1 mínimo)
     - _Requirements: 1.5_
 
-- [ ] 2. Reducir efectos visuales decorativos
-  - [ ] 2.1 Simplificar sombras y bordes del form card
+- [x] 2. Reducir efectos visuales decorativos
+  - [x] 2.1 Simplificar sombras y bordes del form card
     - Reducir `shadow-2xl` a `shadow-sm` o eliminar
     - Reducir `rounded-2xl` a `rounded-lg` o `rounded-xl`
     - Ajustar `border-gray-800` para contraste sutil
     - _Requirements: 2.1, 2.2, 2.3_
   
-  - [ ] 2.2 Simplificar efectos de focus en inputs
+  - [x] 2.2 Simplificar efectos de focus en inputs
     - Cambiar `focus:ring-2 focus:ring-orange-500` a `focus:ring-1 focus:border-gray-500` o solo border
     - Agregar `transition-colors duration-200` para transiciones sutiles
     - _Requirements: 2.5_
