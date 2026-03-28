@@ -23,12 +23,12 @@
                 autocomplete="username"
                 placeholder="tu nombre"
                 class="w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-                [class.border-orange-500]="fieldInvalid('login')"
+                       focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+                [class.border-red-500]="fieldInvalid('login')"
                 [class.border-gray-700]="!fieldInvalid('login')"
               />
               @if (fieldInvalid('login')) {
-              <p class="text-orange-400 text-xs mt-1">Campo obligatorio</p>
+              <p class="text-red-400 text-xs mt-1">Campo obligatorio</p>
               }
             </div>
 
@@ -43,19 +43,19 @@
                 autocomplete="current-password"
                 placeholder="••••••••"
                 class="w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-                [class.border-orange-500]="fieldInvalid('password')"
+                       focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+                [class.border-red-500]="fieldInvalid('password')"
                 [class.border-gray-700]="!fieldInvalid('password')"
               />
               @if (fieldInvalid('password')) {
-              <p class="text-orange-400 text-xs mt-1">Campo obligatorio</p>
+              <p class="text-red-400 text-xs mt-1">Campo obligatorio</p>
               }
             </div>
 
             <!-- Error -->
             @if (error()) {
             <div
-              class="mb-5 bg-orange-900/40 border border-orange-700 rounded-lg px-4 py-3 text-orange-300 text-sm"
+              class="mb-5 bg-red-900/30 border border-red-800 rounded-lg px-4 py-3 text-red-300 text-sm"
             >
               {{ error() }}
             </div>
@@ -65,7 +65,7 @@
             <button
               type="submit"
               [disabled]="loading()"
-              class="w-full bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed
+              class="w-full bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed
                      text-white font-semibold py-3 rounded-lg transition-colors"
             >
               @if (loading()) {
@@ -100,7 +100,7 @@
             ¿No tienes cuenta?
             <a
               routerLink="/registro"
-              class="text-orange-400 hover:text-orange-300 font-medium ml-1"
+              class="text-gray-300 hover:text-gray-200 font-medium ml-1"
             >
               Regístrate
             </a>

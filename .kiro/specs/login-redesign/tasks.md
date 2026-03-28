@@ -8,13 +8,13 @@ La implementación se realizará en el componente `LoginComponent` ubicado en `a
 
 ## Tasks
 
-- [ ] 1. Implementar esquema de colores neutros
-  - [ ] 1.1 Reemplazar colores naranjas por tonos neutros en botones y enlaces
+- [x] 1. Implementar esquema de colores neutros
+  - [x] 1.1 Reemplazar colores naranjas por tonos neutros en botones y enlaces
     - Cambiar clases `bg-orange-*`, `text-orange-*`, `hover:bg-orange-*` por equivalentes en grises
     - Actualizar clases de enlaces de `text-orange-400 hover:text-orange-300` a tonos neutros
     - _Requirements: 1.1, 1.2_
   
-  - [ ] 1.2 Actualizar colores de mensajes de error a tonos rojos apagados
+  - [x] 1.2 Actualizar colores de mensajes de error a tonos rojos apagados
     - Cambiar `bg-orange-900/40 border-orange-700 text-orange-300` a `bg-red-900/30 border-red-800 text-red-300`
     - Actualizar border de inputs con error de `border-orange-500` a `border-red-500`
     - Actualizar texto de error de `text-orange-400` a `text-red-400`
