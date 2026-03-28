@@ -47,14 +47,14 @@ La implementación se realizará en el componente `LoginComponent` ubicado en `a
     - Mantener jerarquía tipográfica clara
     - _Requirements: 3.4_
 
-- [ ] 4. Simplificar elementos interactivos
-  - [ ] 4.1 Actualizar estilos del botón de submit
+- [x] 4. Simplificar elementos interactivos
+  - [x] 4.1 Actualizar estilos del botón de submit
     - Cambiar de `bg-orange-600 hover:bg-orange-700` a `bg-gray-700 hover:bg-gray-600`
     - Agregar `transition-colors duration-200`
     - Mantener estados disabled con opacity
     - _Requirements: 4.1, 4.3, 4.4_
   
-  - [ ] 4.2 Ajustar estilos de inputs en estado default
+  - [x] 4.2 Ajustar estilos de inputs en estado default
     - Mantener `bg-gray-800` o considerar `bg-gray-850`
     - Usar borders sutiles en estado default
     - _Requirements: 4.2_
