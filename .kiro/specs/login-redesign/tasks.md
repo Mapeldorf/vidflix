@@ -59,8 +59,8 @@ La implementación se realizará en el componente `LoginComponent` ubicado en `a
     - Usar borders sutiles en estado default
     - _Requirements: 4.2_
 
-- [ ] 5. Optimizar logo y branding
-  - [ ] 5.1 Reducir tamaño del logo y ajustar colores
+- [x] 5. Optimizar logo y branding
+  - [x] 5.1 Reducir tamaño del logo y ajustar colores
     - Cambiar de `h-16` a `h-12` o `h-14`
     - Actualizar color del subtítulo de `gray-400` a `gray-500`
     - Mantener centrado y espaciado adecuado
