@@ -36,13 +36,13 @@ La implementación se realizará en el componente `LoginComponent` ubicado en `a
     - Agregar `transition-colors duration-200` para transiciones sutiles
     - _Requirements: 2.5_
 
-- [ ] 3. Optimizar espaciado y tipografía
-  - [ ] 3.1 Aumentar espaciado vertical entre elementos del formulario
+- [x] 3. Optimizar espaciado y tipografía
+  - [x] 3.1 Aumentar espaciado vertical entre elementos del formulario
     - Incrementar valores de `mb-*` entre secciones del form
     - Mantener padding generoso en el card (`p-8`)
     - _Requirements: 3.1, 3.2_
   
-  - [ ] 3.2 Ajustar pesos de fuente para mayor sutileza
+  - [x] 3.2 Ajustar pesos de fuente para mayor sutileza
     - Reducir `font-semibold` a `font-medium` en botón de submit
     - Mantener jerarquía tipográfica clara
     - _Requirements: 3.4_
