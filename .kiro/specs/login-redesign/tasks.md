@@ -66,14 +66,14 @@ La implementación se realizará en el componente `LoginComponent` ubicado en `a
     - Mantener centrado y espaciado adecuado
     - _Requirements: 6.1, 6.2, 6.4, 6.5_
 
-- [ ] 6. Implementar animación de entrada sutil
-  - [ ] 6.1 Crear keyframes de animación en styles.css
+- [x] 6. Implementar animación de entrada sutil
+  - [x] 6.1 Crear keyframes de animación en styles.css
     - Definir animación fade-in con opcional translate usando `@layer utilities`
     - Configurar duración de 300-500ms con easing natural (ease-out)
     - Incluir media query para `prefers-reduced-motion`
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7_
   
-  - [ ] 6.2 Aplicar clase de animación al contenedor del formulario
+  - [x] 6.2 Aplicar clase de animación al contenedor del formulario
     - Agregar clase de animación al form card en el template HTML
     - Verificar que la animación no bloquee interacción del usuario
     - _Requirements: 8.1, 8.6_
