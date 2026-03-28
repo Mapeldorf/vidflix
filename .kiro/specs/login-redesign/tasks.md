@@ -20,7 +20,7 @@ La implementación se realizará en el componente `LoginComponent` ubicado en `a
     - Actualizar texto de error de `text-orange-400` a `text-red-400`
     - _Requirements: 1.4_
   
-  - [ ]* 1.3 Verificar contraste de colores para accesibilidad
+  - [x] 1.3 Verificar contraste de colores para accesibilidad
     - Validar que los nuevos colores cumplan WCAG AA (4.5:1 mínimo)
     - _Requirements: 1.5_
 
